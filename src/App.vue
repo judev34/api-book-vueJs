@@ -1,28 +1,49 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+
+    <v-app id="app"> 
+        <v-app-bar app class="secondary">
+            <v-toolbar-title class="nav-bar--title">STAPI APP</v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-text-field
+              hide-details
+              solo
+              dense
+              placeholder="Rechercher"
+              append-icon="mdi-magnify"
+              v-model="search"></v-text-field>
+        </v-app-bar>
+
+        <v-main class="blue lighten-2">
+            <ErrorAlert>
+              <ProductList :search="search"></ProductList>
+            </ErrorAlert>
+        </v-main>
+    </v-app>
+   
 </template>
 
+
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import ProductList from "@/components/ProductList"; // j'importe le composant depuis le dossier components
+import ErrorAlert from "@/components/utils/ErrorAlert"
+
 
 export default {
   name: 'App',
-  components: {
-    HelloWorld
-  }
-}
+
+  components: { // j'apelle le composant ProductList
+    ErrorAlert,
+    ProductList
+  },
+
+  data: () => ({
+    search: ""
+  }),
+};
 </script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+<style scoped>
+.navbar--title {
+  color: white;
 }
 </style>

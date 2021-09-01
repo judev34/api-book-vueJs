@@ -1,0 +1,35 @@
+
+<script>
+export default {
+    name: "ErrorCapture",
+    props: {
+        isCaptured: {
+            default: false,
+            type: Boolean
+        }
+    },
+    data() {
+        return {
+            error: null
+        }
+    },
+    methods: {
+        reset() {
+            this.error = null;
+            this.$emit("reset");
+        }
+    },
+    errorCaptured(error) {
+        this.error = error;
+        this.$emit("error", error);
+        if (this.capture) return false;
+    },
+    render() {
+        return this.$scopedSlots.default({
+            error: this.error,
+            reset: this.reset
+        });
+    }
+}
+</script>
+
