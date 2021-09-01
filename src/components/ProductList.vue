@@ -40,7 +40,9 @@
 <script>
 
 import http from "@/api/http"
-import { debounce} from "lodash-es"
+// import httpAxios from "@/api/httpAxios"
+
+
 
 export default {
     name: "ProductList",
@@ -57,7 +59,7 @@ export default {
         category: null,
         page: 1,
         perPage: 10,
-        nbPages: ""
+        nbPages: "",
     }),
     async created() { // fonction asynchrone pour aller chercher les produits sous format json
         
@@ -66,12 +68,7 @@ export default {
         const categories = await this.getCategories();
         const total = await this.getProductsCount();
         this.initCategories(categories, total);
-        // getProductsDebounced : debounce(
-        //     async function(start) {
-        //     this.products = await this.getProducts(start);
-        //     },
-        //     200
-        // )
+        
     },
     methods: {
         async getProducts(start) {
@@ -79,7 +76,7 @@ export default {
             let uri = `/products?_start=${start}&_limit=${this.perPage}`;
 
             if (this.category) {
-                uri += "&category" + this.category;
+                uri += "&category=" + this.category;
             }
             if (this.search.length > 0) {
                 uri += "&name_contains=" + this.search;
@@ -139,14 +136,11 @@ export default {
         },
         async search() {
             this.products = await this.getProducts(0);
+            
         },
-        getProductsDebounced: debounce(
-            async function(start) {
-            return await this.getProducts(start)
-        },
-        300
-        )
-    }  
+        
+    },
+      
     // created() {
     //     fetch(`${this.apiUrl/products}`, {
     //         method: 'GET'

@@ -26,7 +26,6 @@
 <script>
 import ProductList from "@/components/ProductList"; // j'importe le composant depuis le dossier components
 import ErrorAlert from "@/components/utils/ErrorAlert"
-import { debounce } from "lodash-es"
 
 
 export default {
@@ -40,14 +39,6 @@ export default {
   data: () => ({
     search: ""
   }),
-  created : {
-    getProductsDebounced: debounce(
-      async function(start) {
-          this.products = await this.getProducts(start);
-      },
-      200
-    )
-  }
 };
 </script>
 
