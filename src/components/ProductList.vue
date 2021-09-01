@@ -11,7 +11,7 @@
                 </v-select>
             </v-col>
             <v-col cols="9" class="text-end">
-                <v-btn-toggle>
+                <v-btn-toggle v-show="search.length === 0">
                     <v-btn v-if="page != 1" @click="page--">Préc.</v-btn>
                     <v-btn @click="page = 1">{{ page }} / {{ nbPages }}</v-btn>
                     <v-btn v-if="page != nbPages" @click="page++">Suiv.</v-btn>
@@ -40,6 +40,7 @@
 <script>
 
 import http from "@/api/http"
+import { debounce} from "lodash-es"
 
 export default {
     name: "ProductList",
@@ -56,7 +57,7 @@ export default {
         category: null,
         page: 1,
         perPage: 10,
-        nbPages: "..."
+        nbPages: ""
     }),
     async created() { // fonction asynchrone pour aller chercher les produits sous format json
         
@@ -64,19 +65,27 @@ export default {
         console.log(this.products);
         const categories = await this.getCategories();
         const total = await this.getProductsCount();
-        this.initCategories(categories, total);          
+        this.initCategories(categories, total);
+        // getProductsDebounced : debounce(
+        //     async function(start) {
+        //     this.products = await this.getProducts(start);
+        //     },
+        //     200
+        // )
     },
     methods: {
         async getProducts(start) {
 
-            // let uri = `/products?_start=${start}&_limit=${this.perPage}`;
+            let uri = `/products?_start=${start}&_limit=${this.perPage}`;
 
-            if (!this.category) {
-
-                return await http.callURI(`/products?_start=${start}&_limit=${this.perPage}`);
-            } else {
-                return await http.callURI(`/products?_start=${start}&_limit=${this.perPage}&category=${this.category}`);
+            if (this.category) {
+                uri += "&category" + this.category;
             }
+            if (this.search.length > 0) {
+                uri += "&name_contains=" + this.search;
+            }
+
+            return await http.callURI(uri);
         },
         async getCategories() {
            return await http.callURI(`/categories`);
@@ -117,7 +126,7 @@ export default {
 
                 return Math.ceil(( selectedCategory[0].nbProducts / this.perPage))
             }
-            return '..';
+            
         }
     },
     watch: {
@@ -127,7 +136,16 @@ export default {
         },
         async category(newVal) {
             this.products = await this.getProducts(0, this.perPage, newVal);
-        }
+        },
+        async search() {
+            this.products = await this.getProducts(0);
+        },
+        getProductsDebounced: debounce(
+            async function(start) {
+            return await this.getProducts(start)
+        },
+        300
+        )
     }  
     // created() {
     //     fetch(`${this.apiUrl/products}`, {
